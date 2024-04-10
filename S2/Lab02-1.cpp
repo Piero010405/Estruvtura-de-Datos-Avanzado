@@ -62,25 +62,7 @@ void buscarEquivalencia(UnionFind uf, int n1, int n2)
 }
 int main()
 {
-    // UnionFind uf(12);
-
-    // uf.UnionSet(1, 0);
-    // uf.UnionSet(2, 0);
-    // uf.UnionSet(3, 2);
-
-    // uf.UnionSet(5, 4);
-    // uf.UnionSet(6, 4);
-    // uf.UnionSet(7, 6);
-
-    // uf.UnionSet(9, 8);
-    // uf.UnionSet(10, 8);
-    // uf.UnionSet(11, 10);
-
-    // buscarEquivalencia(uf, 1, 3);
-    // buscarEquivalencia(uf, 2, 9);
-    // buscarEquivalencia(uf, 4, 7);
-
-    UnionFind uf(16);
+    UnionFind uf(12);
 
     uf.UnionSet(1, 0);
     uf.UnionSet(2, 0);
@@ -94,16 +76,34 @@ int main()
     uf.UnionSet(10, 8);
     uf.UnionSet(11, 10);
 
-    uf.UnionSet(13, 12);
-    uf.UnionSet(14, 12);
-    uf.UnionSet(15, 14);
+    buscarEquivalencia(uf, 1, 3);
+    buscarEquivalencia(uf, 2, 9);
+    buscarEquivalencia(uf, 4, 7);
 
-    buscarEquivalencia(uf, 0, 1);
-    buscarEquivalencia(uf, 5, 13);
-    buscarEquivalencia(uf, 6, 14);
-    buscarEquivalencia(uf, 3, 2);
-    buscarEquivalencia(uf, 7, 6);
-    buscarEquivalencia(uf, 15, 12);
+    // UnionFind uf(16);
+
+    // uf.UnionSet(1, 0);
+    // uf.UnionSet(2, 0);
+    // uf.UnionSet(3, 2);
+
+    // uf.UnionSet(5, 4);
+    // uf.UnionSet(6, 4);
+    // uf.UnionSet(7, 6);
+
+    // uf.UnionSet(9, 8);
+    // uf.UnionSet(10, 8);
+    // uf.UnionSet(11, 10);
+
+    // uf.UnionSet(13, 12);
+    // uf.UnionSet(14, 12);
+    // uf.UnionSet(15, 14);
+
+    // buscarEquivalencia(uf, 0, 1);
+    // buscarEquivalencia(uf, 5, 13);
+    // buscarEquivalencia(uf, 6, 14);
+    // buscarEquivalencia(uf, 3, 2);
+    // buscarEquivalencia(uf, 7, 6);
+    // buscarEquivalencia(uf, 15, 12);
 
     return 0;
 }

@@ -1,0 +1,6 @@
+{
+    "workbench.sideBar.location": "right",
+    "files.associations": {
+        "ostream": "cpp"
+    }
+}

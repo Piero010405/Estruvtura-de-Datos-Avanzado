@@ -9,19 +9,16 @@ class UnionFind
 private:
     vector<int> parent;
     vector<int> size;
-    vector<char> ascii;
 
 public:
     UnionFind(int n)
     {
         parent.resize(n);
         size.resize(n, 1);
-        ascii.resize(n);
 
         for (int i = 0; i < n; i++)
         {
             parent[i] = i;
-            ascii[i] = char(i + INICIO_ASCCI);
         }
     }
 
@@ -34,28 +31,16 @@ public:
         return parent[x];
     }
 
-    // int findAscii(char c)
-    // {
-    //     for (int i = 0; i < ascii.size(); i++)
-    //     {
-    //         if (ascii[i] == c)
-    //         {
-    //             return i;
-    //         }
-    //     }
-
-    //     return -1;
-    // }
+    int findAscii(char c)
+    {
+        int x = static_cast<int>(c) - INICIO_ASCCI;
+        return x;
+    }
 
     void UnionSet(char a, char b)
     {
-        // int x = findAscii(a);
-        // int y = findAscii(b);
-        int x = static_cast<int>(a) - INICIO_ASCCI;
-        int y = static_cast<int>(b) - INICIO_ASCCI;
-
-        int rootX = find(x);
-        int rootY = find(y);
+        int rootX = find(findAscii(a));
+        int rootY = find(findAscii(b));
         if (rootX == rootY)
         {
             return;
@@ -78,12 +63,8 @@ public:
 void buscarEquivalencia(UnionFind uf, char c1, char c2)
 {
     cout << "Elemento " << c1 << " y " << c2 << " son equivalentes?? ";
-    // int n1 = uf.findAscii(c1);
-    // int n2 = uf.findAscii(c2);
-    // if (uf.find(n1) == uf.find(n2))
-    int x = static_cast<int>(c1) - INICIO_ASCCI;
-        int y = static_cast<int>(c2) - INICIO_ASCCI;
-    if (uf.find(x) == uf.find(y))
+
+    if (uf.find(uf.findAscii(c1)) == uf.find(uf.findAscii(c2)))
         cout << "SI." << endl;
     else
         cout << "NO." << endl;
