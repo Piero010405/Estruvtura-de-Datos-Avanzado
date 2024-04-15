@@ -1,6 +1,8 @@
 {
-    "workbench.sideBar.location": "right",
-    "files.associations": {
-        "ostream": "cpp"
-    }
+  "workbench.sideBar.location": "right",
+  "files.associations": {
+    "ostream": "cpp",
+    "vector": "cpp",
+    "iostream": "cpp"
+  }
 }
