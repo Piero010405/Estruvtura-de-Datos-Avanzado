@@ -1,68 +1,70 @@
 #include <iostream>
+#include <vector>
+#define rojo false
+#define negro true
 using namespace std;
-
-const string ROJO = "Rojo";
-const string NEGRO = "Negro";
 
 struct Nodo
 {
     int valor;
-    string color;
-    Nodo *izquierda;
-    Nodo *derecha;
-    Nodo *padre;
-    Nodo *raiz;
-
-    Nodo() : valor(0), color(""), izquierda(nullptr), derecha(nullptr), padre(nullptr), raiz(nullptr) {}
+    bool color; // falso negro, verdadero rojo
+    Nodo *izquierda = nullptr;
+    Nodo *derecha = nullptr;
+    Nodo *padre = nullptr;
 };
 
-// Prototipos de funciones
-Nodo *CrearNodo(int valor);
-void Insertar(Nodo *&arbol, int valor);
-void InsertarRecursivamente(Nodo *&nodoActual, Nodo *nuevoNodo);
-void Ajustar(Nodo *&arbol, Nodo *nodo);
-void RotarIzquierda(Nodo *&arbol, Nodo *nodo);
-void RotarDerecha(Nodo *&arbol, Nodo *nodo);
-void CambiarColor(Nodo *nodo, const string color);
-string ColorDeNodo(Nodo *nodo);
-Nodo *Buscar(Nodo *arbol, int valor);
-Nodo *Eliminar(Nodo *&arbol, int valor);
+struct Arbol
+{
+    Nodo *raiz;
+};
+
+void InsertarRecursivamente(Nodo *nodoActual, Nodo *nuevoNodo);
+void Insertar(Arbol *arbol, int valor);
+void Ajustar(Arbol *arbol, Nodo *nodo);
+Nodo *Buscar(Arbol *arbol, int valor);
+Nodo *Eliminar(Arbol *arbol, int valor);
 Nodo *ObtenerSiguiente(Nodo *nodo);
-void AjustarEliminacion(Nodo *&arbol, Nodo *nodo);
-void ImprimirArbol(Nodo *arbol);
-void ImprimirNodo(Nodo *nodo);
+void AjustarEliminacion(Arbol *arbol, Nodo *nodo);
+Nodo *CrearNodo(int valor);
+void RotarIzquierda(Arbol *arbol, Nodo *nodo);
+void RotarDerecha(Arbol *arbol, Nodo *nodo);
+void CambiarColor(Nodo *nodo, bool color);
+bool ColorDeNodo(Nodo *nodo);
+void printEnOrder(Nodo *n, int space);
+void printTree(Arbol *arbol);
+bool ColorDeNodo(Nodo *nodo);
+void insertarVector(Arbol *arbol, vector<int> v);
 
 Nodo *CrearNodo(int valor)
 {
     Nodo *nodo = new Nodo();
     nodo->valor = valor;
-    nodo->color = ROJO;
+    nodo->color = rojo; // Un nodo nuevo del árbol presenta color rojo
     nodo->izquierda = nullptr;
     nodo->derecha = nullptr;
     nodo->padre = nullptr;
-    nodo->raiz = nullptr;
-
     return nodo;
 }
 
-void Insertar(Nodo *&arbol, int valor)
+void Insertar(Arbol *arbol, int valor)
 {
     Nodo *nuevoNodo = CrearNodo(valor);
-    if (arbol == nullptr)
-    {
-        arbol = nuevoNodo;
+
+    if (arbol->raiz == nullptr)
+    { // significaria que el arbol esta vacios
+        // std::cout<<"Ingrese en el arbol nuevo"<<std::endl;
         arbol->raiz = nuevoNodo;
     }
     else
     {
-        InsertarRecursivamente(arbol, nuevoNodo);
+        // std::cout<<"Insertando recursivamente"<<std::endl;
+        InsertarRecursivamente(arbol->raiz, nuevoNodo);
     }
-
-    CambiarColor(nuevoNodo, ROJO);
+    CambiarColor(nuevoNodo, rojo);
     Ajustar(arbol, nuevoNodo);
 }
 
-void InsertarRecursivamente(Nodo *&nodoActual, Nodo *nuevoNodo)
+void InsertarRecursivamente(Nodo *nodoActual, Nodo *nuevoNodo)
 {
     if (nuevoNodo->valor < nodoActual->valor)
     {
@@ -72,7 +74,9 @@ void InsertarRecursivamente(Nodo *&nodoActual, Nodo *nuevoNodo)
             nuevoNodo->padre = nodoActual;
         }
         else
+        {
             InsertarRecursivamente(nodoActual->izquierda, nuevoNodo);
+        }
     }
     else
     {
@@ -88,18 +92,18 @@ void InsertarRecursivamente(Nodo *&nodoActual, Nodo *nuevoNodo)
     }
 }
 
-void Ajustar(Nodo *&arbol, Nodo *nodo)
+void Ajustar(Arbol *arbol, Nodo *nodo)
 {
-    while (nodo->padre->color == ROJO)
+    while (nodo->padre != nullptr && nodo->padre->color == rojo)
     {
-        if (nodo->padre == nodo->padre->izquierda->padre)
+        if (nodo->padre == nodo->padre->padre->izquierda)
         {
             Nodo *tio = nodo->padre->padre->derecha;
-            if (tio->color == ROJO)
+            if (tio != nullptr && tio->color == rojo)
             {
-                CambiarColor(nodo->padre, NEGRO);
-                CambiarColor(tio, NEGRO);
-                CambiarColor(nodo->padre->padre, ROJO);
+                CambiarColor(nodo->padre, negro);
+                CambiarColor(tio, negro);
+                CambiarColor(nodo->padre->padre, rojo);
                 nodo = nodo->padre->padre;
             }
             else
@@ -109,19 +113,19 @@ void Ajustar(Nodo *&arbol, Nodo *nodo)
                     nodo = nodo->padre;
                     RotarIzquierda(arbol, nodo);
                 }
-                CambiarColor(nodo->padre, NEGRO);
-                CambiarColor(nodo->padre->padre, ROJO);
+                CambiarColor(nodo->padre, negro);
+                CambiarColor(nodo->padre->padre, rojo);
                 RotarDerecha(arbol, nodo->padre->padre);
             }
         }
         else
         {
             Nodo *tio = nodo->padre->padre->izquierda;
-            if (tio->color == ROJO)
+            if (tio != nullptr && tio->color == rojo)
             {
-                CambiarColor(nodo->padre, NEGRO);
-                CambiarColor(tio, NEGRO);
-                CambiarColor(nodo->padre->padre, ROJO);
+                CambiarColor(nodo->padre, negro);
+                CambiarColor(tio, negro);
+                CambiarColor(nodo->padre->padre, rojo);
                 nodo = nodo->padre->padre;
             }
             else
@@ -131,16 +135,16 @@ void Ajustar(Nodo *&arbol, Nodo *nodo)
                     nodo = nodo->padre;
                     RotarDerecha(arbol, nodo);
                 }
-                CambiarColor(nodo->padre, NEGRO);
-                CambiarColor(nodo->padre->padre, ROJO);
+                CambiarColor(nodo->padre, negro);
+                CambiarColor(nodo->padre->padre, rojo);
                 RotarIzquierda(arbol, nodo->padre->padre);
             }
         }
     }
-    CambiarColor(arbol->raiz, NEGRO);
+    CambiarColor(arbol->raiz, negro);
 }
 
-Nodo *Buscar(Nodo *arbol, int valor)
+Nodo *Buscar(Arbol *arbol, int valor)
 {
     Nodo *nodoActual = arbol->raiz;
     while (nodoActual != nullptr && nodoActual->valor != valor)
@@ -157,26 +161,25 @@ Nodo *Buscar(Nodo *arbol, int valor)
     return nodoActual;
 }
 
-Nodo *Eliminar(Nodo *&arbol, int valor)
+Nodo *Eliminar(Arbol *arbol, int valor)
 {
-    Nodo *nodoAEliminar = Buscar(arbol, valor);
-    Nodo *nodoReemplazo;
-    Nodo *hijoReemplazo;
-
-    if (nodoAEliminar == nullptr)
+    Nodo *hijoReemplazo = nullptr;
+    Nodo *nodoReemplazo = nullptr;
+    Nodo *nodoEliminar = Buscar(arbol, valor);
+    if (nodoEliminar == nullptr)
     {
+        cout << "No se pudo encontrar el valor especificado" << endl;
         return nullptr;
     }
 
-    if (nodoAEliminar->izquierda == nullptr || nodoAEliminar->derecha == nullptr)
+    if (nodoEliminar->izquierda == nullptr || nodoEliminar->derecha == nullptr)
     {
-        nodoReemplazo = nodoAEliminar;
+        nodoReemplazo = nodoEliminar;
     }
     else
     {
-        nodoReemplazo = ObtenerSiguiente(nodoAEliminar);
+        nodoReemplazo = ObtenerSiguiente(nodoEliminar);
     }
-
     if (nodoReemplazo->izquierda != nullptr)
     {
         hijoReemplazo = nodoReemplazo->izquierda;
@@ -185,12 +188,10 @@ Nodo *Eliminar(Nodo *&arbol, int valor)
     {
         hijoReemplazo = nodoReemplazo->derecha;
     }
-
     if (hijoReemplazo != nullptr)
     {
         hijoReemplazo->padre = nodoReemplazo->padre;
     }
-
     if (nodoReemplazo->padre == nullptr)
     {
         arbol->raiz = hijoReemplazo;
@@ -205,18 +206,15 @@ Nodo *Eliminar(Nodo *&arbol, int valor)
         {
             nodoReemplazo->padre->derecha = hijoReemplazo;
         }
+        if (nodoReemplazo != nodoEliminar)
+        {
+            nodoEliminar->valor = nodoReemplazo->valor;
+        }
+        if (nodoReemplazo->color == negro)
+        {
+            AjustarEliminacion(arbol, hijoReemplazo);
+        }
     }
-
-    if (nodoReemplazo != nodoAEliminar)
-    {
-        nodoAEliminar->valor = nodoReemplazo->valor;
-    }
-
-    if (nodoReemplazo->color == NEGRO)
-    {
-        AjustarEliminacion(arbol, hijoReemplazo);
-    }
-
     return nodoReemplazo;
 }
 
@@ -225,98 +223,92 @@ Nodo *ObtenerSiguiente(Nodo *nodo)
     if (nodo->derecha != nullptr)
     {
         nodo = nodo->derecha;
-        while (nodo->izquierda != nullptr)
-        {
-            nodo = nodo->izquierda;
-        }
+    }
+    while (nodo->izquierda != nullptr)
+    {
+        nodo = nodo->izquierda;
     }
     return nodo;
 }
 
-void AjustarEliminacion(Nodo *&arbol, Nodo *nodo)
+void AjustarEliminacion(Arbol *arbol, Nodo *nodo)
 {
-    while (nodo != arbol->raiz && ColorDeNodo(nodo) == NEGRO)
+    while (nodo != arbol->raiz && ColorDeNodo(nodo) == negro)
     {
-        Nodo *hermano;
         if (nodo == nodo->padre->izquierda)
         {
-            hermano = nodo->padre->derecha;
-            if (ColorDeNodo(hermano) == ROJO)
+            Nodo *hermano = nodo->padre->izquierda;
+            if (ColorDeNodo(hermano) == rojo)
             {
-                CambiarColor(hermano, NEGRO);
-                CambiarColor(nodo->padre, ROJO);
+                CambiarColor(hermano, negro);
+                CambiarColor(nodo->padre, rojo);
                 RotarIzquierda(arbol, nodo->padre);
                 hermano = nodo->padre->derecha;
             }
-
-            if (ColorDeNodo(hermano->izquierda) == NEGRO && ColorDeNodo(hermano->derecha) == NEGRO)
+            if (ColorDeNodo(hermano->izquierda) == negro && ColorDeNodo(hermano->derecha) == negro)
             {
-                CambiarColor(hermano, ROJO);
+                CambiarColor(hermano, rojo);
                 nodo = nodo->padre;
             }
             else
             {
-                if (ColorDeNodo(hermano->derecha) == NEGRO)
+                if (ColorDeNodo(hermano->derecha) == negro)
                 {
-                    CambiarColor(hermano->izquierda, NEGRO);
-                    CambiarColor(hermano, ROJO);
+                    CambiarColor(hermano->izquierda, negro);
+                    CambiarColor(hermano, rojo);
                     RotarDerecha(arbol, hermano);
                     hermano = nodo->padre->derecha;
                 }
                 CambiarColor(hermano, ColorDeNodo(nodo->padre));
-                CambiarColor(nodo->padre, NEGRO);
-                CambiarColor(hermano->derecha, NEGRO);
+                CambiarColor(nodo->padre, negro);
+                CambiarColor(hermano->derecha, negro);
                 RotarIzquierda(arbol, nodo->padre);
                 nodo = arbol->raiz;
             }
         }
         else
         {
-            hermano = nodo->padre->izquierda;
-            if (ColorDeNodo(hermano) == ROJO)
+            Nodo *hermano = nodo->padre->izquierda;
+            if (ColorDeNodo(hermano) == rojo)
             {
-                CambiarColor(hermano, NEGRO);
-                CambiarColor(nodo->padre, ROJO);
+                CambiarColor(hermano, negro);
+                CambiarColor(nodo->padre, rojo);
                 RotarDerecha(arbol, nodo->padre);
                 hermano = nodo->padre->izquierda;
             }
-
-            if (ColorDeNodo(hermano->izquierda) == NEGRO && ColorDeNodo(hermano->izquierda) == NEGRO)
+            if (ColorDeNodo(hermano->derecha) == negro && ColorDeNodo(hermano->izquierda) == negro)
             {
-                CambiarColor(hermano, ROJO);
+                CambiarColor(hermano, rojo);
                 nodo = nodo->padre;
             }
             else
             {
-                if (ColorDeNodo(hermano->izquierda) == NEGRO)
+                if (ColorDeNodo(hermano->izquierda) == negro)
                 {
-                    CambiarColor(hermano->derecha, NEGRO);
-                    CambiarColor(hermano, ROJO);
+                    CambiarColor(hermano->derecha, negro);
+                    CambiarColor(hermano, rojo);
                     RotarIzquierda(arbol, hermano);
-                    hermano = nodo->padre->izquierda;
                 }
                 CambiarColor(hermano, ColorDeNodo(nodo->padre));
-                CambiarColor(nodo->padre, NEGRO);
-                CambiarColor(hermano->izquierda, NEGRO);
+                CambiarColor(nodo->padre, negro);
+                CambiarColor(hermano->izquierda, negro);
                 RotarDerecha(arbol, nodo->padre);
                 nodo = arbol->raiz;
             }
         }
     }
-    CambiarColor(nodo, NEGRO);
+    CambiarColor(nodo, negro);
 }
 
-void RotarIzquierda(Nodo *&arbol, Nodo *nodo)
+void RotarIzquierda(Arbol *arbol, Nodo *nodo)
 {
     Nodo *derechaHijo = nodo->derecha;
     nodo->derecha = derechaHijo->izquierda;
-
     if (derechaHijo->izquierda != nullptr)
     {
         derechaHijo->izquierda->padre = nodo;
     }
     derechaHijo->padre = nodo->padre;
-
     if (nodo->padre == nullptr)
     {
         arbol->raiz = derechaHijo;
@@ -333,17 +325,15 @@ void RotarIzquierda(Nodo *&arbol, Nodo *nodo)
     nodo->padre = derechaHijo;
 }
 
-void RotarDerecha(Nodo *&arbol, Nodo *nodo)
+void RotarDerecha(Arbol *arbol, Nodo *nodo)
 {
     Nodo *izquierdaHijo = nodo->izquierda;
     nodo->izquierda = izquierdaHijo->derecha;
-
     if (izquierdaHijo->derecha != nullptr)
     {
         izquierdaHijo->derecha->padre = nodo;
     }
     izquierdaHijo->padre = nodo->padre;
-
     if (nodo->padre == nullptr)
     {
         arbol->raiz = izquierdaHijo;
@@ -360,66 +350,112 @@ void RotarDerecha(Nodo *&arbol, Nodo *nodo)
     nodo->padre = izquierdaHijo;
 }
 
-void CambiarColor(Nodo *nodo, string color)
+void CambiarColor(Nodo *nodo, bool color)
 {
     nodo->color = color;
 }
 
-string ColorDeNodo(Nodo *nodo)
+bool ColorDeNodo(Nodo *nodo)
 {
     if (nodo == nullptr)
     {
-        return NEGRO;
+        return negro;
     }
-
     return nodo->color;
 }
 
-void ImprimirArbol(Nodo *arbol)
-{
-    if (arbol == nullptr)
-    {
-        cout << "Árbol vacío" << endl;
-        return;
-    }
+// extra
 
-    ImprimirNodo(arbol);
+string ImprimirColor(bool color)
+{
+    if (color)
+    {
+        return "Negro";
+    }
+    return "Rojo";
 }
 
-void ImprimirNodo(Nodo *nodo)
+void printEnOrder(Nodo *nodo, int space)
 {
-    if (nodo != nullptr)
+    if (nodo == nullptr)
+        return;
+    space += 10;
+    // Imprimir el subárbol derecho
+    printEnOrder(nodo->derecha, space);
+
+    // Imprimir el nodo actual
+    cout << endl;
+    for (int i = 10; i < space; i++)
+        cout << " ";
+    if (nodo->padre != nullptr)
     {
-        ImprimirNodo(nodo->derecha);
-        cout << "Valor: " << nodo->valor << ", Color: " << nodo->color << endl;
-        ImprimirNodo(nodo->izquierda);
+        if (nodo == nodo->padre->izquierda)
+            cout << "|----" << nodo->valor << "(" << ImprimirColor(nodo->color) << ")";
+        else
+            cout << "|----" << nodo->valor << "(" << ImprimirColor(nodo->color) << ")";
+    }
+    else
+    {
+        cout << nodo->valor << "(" << ImprimirColor(nodo->color) << ")";
+    }
+
+    // Imprimir el subárbol izquierdo
+    printEnOrder(nodo->izquierda, space);
+}
+
+void printTree(Arbol *arbol)
+{
+    if (arbol == nullptr || arbol->raiz == nullptr)
+    {
+        cout << "Árbol vacío!" << endl;
+        return;
+    }
+    // Llamar a la función de impresión con el nodo raíz y el espacio inicial
+    printEnOrder(arbol->raiz, 0);
+    cout << endl;
+}
+
+void insertarVector(Arbol *arbol, vector<int> v)
+{
+    for (int i = 0; i < v.size(); i++)
+    {
+        Insertar(arbol, v[i]);
     }
 }
 
 int main()
 {
-    Nodo *arbol = nullptr;
+    Arbol *arbol = new Arbol();
+    arbol->raiz = nullptr;
+    vector<int> v = {50, 70, 40, 30, 65, 35, 85, 20, 90, 10, 80, 5, 15, 60, 55};
+    insertarVector(arbol, v);
+    cout << "Arbol B: Raiz -> " << arbol->raiz->valor << ImprimirColor(arbol->raiz->color) << "\n Estructura completa: ";
+    printTree(arbol);
+    cout << endl;
 
-    Insertar(arbol, 50);
-    Insertar(arbol, 70);
-    Insertar(arbol, 40);
-    Insertar(arbol, 30);
-    Insertar(arbol, 65);
-    Insertar(arbol, 35);
-    Insertar(arbol, 85);
-    Insertar(arbol, 20);
-    Insertar(arbol, 90);
-    Insertar(arbol, 10);
-    Insertar(arbol, 80);
-    Insertar(arbol, 5);
-    Insertar(arbol, 15);
-    Insertar(arbol, 60);
-    Insertar(arbol, 55);
+    // Pregunta 4
+    // vector<int> v4 = { 12,5,15,3,10,13,17,4,7,11,14,6,8};
+    // insertarVector(arbol, v4);
+    // Nodo * n = Eliminar(arbol, 5);
+    // cout << "Arbol B: Raiz -> " << arbol->raiz->valor << ImprimirColor(arbol->raiz->color) << "\n Estructura completa: ";
+    // printTree(arbol);
+    // cout << endl;
 
-    // Imprimir árbol
-    cout << "Árbol:" << endl;
-    cout << "Nodo Raiz: " << arbol->raiz->valor << ", Color: " << arbol->raiz->color << endl;
-    ImprimirArbol(arbol);
+    // Pregunta 3
+    // vector<int> v3 = {13,8,1,6,11,17,15,25,22,27};
+    // insertarVector(arbol, v3);
+    // Insertar(arbol, 5);
+    // cout << "Arbol B: Raiz -> " << arbol->raiz->valor << ImprimirColor(arbol->raiz->color) << "\n Estructura completa: ";
+    // printTree(arbol);
+    // cout << endl;
+
+    // Pregunta 2
+    // vector<int> v2 = {7,2,11,1,5,4,8,14,15};
+    // insertarVector(arbol, v2);
+    // Nodo * n = Eliminar(arbol, 14);
+    // cout << "Arbol B: Raiz -> " << arbol->raiz->valor << ImprimirColor(arbol->raiz->color) << "\n Estructura completa: ";
+    // printTree(arbol);
+    // cout << endl;
 
     return 0;
 }
