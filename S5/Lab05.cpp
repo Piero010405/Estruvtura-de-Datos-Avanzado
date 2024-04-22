@@ -8,14 +8,16 @@ const int INICIO_ASCCI = 97;
 struct NodoArbolPrefijo{
     bool esFinal;
     NodoArbolPrefijo* hijos[TAMANO_ARREGLO];
+    char c;
 };
 
-NodoArbolPrefijo* NuevoNodo(){
+NodoArbolPrefijo* NuevoNodo(char c){
     NodoArbolPrefijo* nodo = new NodoArbolPrefijo();
     nodo->esFinal = false;
     for (int i = 0; i < TAMANO_ARREGLO; i++) {
         nodo->hijos[i] = nullptr; 
     }
+    nodo->c = c;
     return nodo;
 }
 
@@ -23,8 +25,8 @@ void Insertar(string palabra, NodoArbolPrefijo *raiz){
     NodoArbolPrefijo* nodoActual = raiz;
     for (char c: palabra){
         int indice = static_cast<int>(tolower(c)) - INICIO_ASCCI;
-        if (nodoActual->hijos[indice] == nullptr){
-            nodoActual->hijos[indice] = NuevoNodo();
+        if (nodoActual->hijos[indice] == nullptr || nodoActual->hijos[indice]->c == ' '){
+            nodoActual->hijos[indice] = NuevoNodo(tolower(c));
         }
         nodoActual = nodoActual->hijos[indice];
     }
@@ -51,20 +53,63 @@ void BuscarPalabra(string palabra, NodoArbolPrefijo* raiz){
     }
 }
 
+void printEnOrder(NodoArbolPrefijo *nodo)
+{
+    if (nodo == nullptr)
+        return;
+
+    for (int i = 0; i < TAMANO_ARREGLO; i++){
+        if (nodo->hijos[i] != nullptr){
+            NodoArbolPrefijo* nodoActual = nodo->hijos[i];
+            cout << nodoActual->c << " - ";
+            printEnOrder(nodoActual);
+            cout << endl;
+        }
+    }
+}
+
+void ImprimirArbol(NodoArbolPrefijo* arbol){
+    if (arbol == nullptr)
+    {
+        cout << "Árbol vacío!" << endl;
+        return;
+    }
+    printEnOrder(arbol);
+}
+
+
 int main()
 {
-    NodoArbolPrefijo* raiz = NuevoNodo();
+    NodoArbolPrefijo* raiz = NuevoNodo(' ');
 
-    Insertar("hola", raiz);
-    Insertar("adios", raiz);
-    Insertar("hogar", raiz);
-    Insertar("hombre", raiz);
-    Insertar("hora", raiz);
-    Insertar("alamo", raiz);
-    Insertar("arbol", raiz);
+    // Insertar("hola", raiz);
+    // Insertar("adios", raiz);
+    // Insertar("hogar", raiz);
+    // Insertar("hombre", raiz);
+    // Insertar("hora", raiz);
+    // Insertar("alamo", raiz);
+    // Insertar("arbol", raiz);
 
-    BuscarPalabra("hola", raiz);
-    BuscarPalabra("adios", raiz);
+    // BuscarPalabra("hola", raiz);
+    // BuscarPalabra("adios", raiz);
     
+    // EJERCICIO 1
+    Insertar("Romane", raiz);
+    Insertar("Romanus", raiz);
+    Insertar("Rubens", raiz);
+    Insertar("Ruber", raiz);
+    Insertar("Rubicon", raiz);
+    Insertar("Rubicundus", raiz);
+    ImprimirArbol(raiz);
+
+    // EJERCICIO 2
+    // Insertar("Algo", raiz);
+    // Insertar("Ala", raiz);
+    // Insertar("Abeja", raiz);
+    // Insertar("Trio", raiz);
+    // Insertar("Trigo", raiz);
+    // Insertar("Mama", raiz);
+    // Insertar("Manila", raiz);
+    // Insertar("Manipular", raiz);
     return 0;
 }
