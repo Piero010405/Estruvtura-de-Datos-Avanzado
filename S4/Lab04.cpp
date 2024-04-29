@@ -96,6 +96,7 @@ void Ajustar(Arbol *arbol, Nodo *nodo)
 {
     while (nodo->padre != nullptr && nodo->padre->color == rojo)
     {
+        // SI PADRE ES HIJO IZQ
         if (nodo->padre == nodo->padre->padre->izquierda)
         {
             Nodo *tio = nodo->padre->padre->derecha;
@@ -108,6 +109,7 @@ void Ajustar(Arbol *arbol, Nodo *nodo)
             }
             else
             {
+                // SI HIJO ES DER
                 if (nodo == nodo->padre->derecha)
                 {
                     nodo = nodo->padre;
@@ -118,6 +120,7 @@ void Ajustar(Arbol *arbol, Nodo *nodo)
                 RotarDerecha(arbol, nodo->padre->padre);
             }
         }
+        // SI PADRE ES HIJO DER
         else
         {
             Nodo *tio = nodo->padre->padre->izquierda;
@@ -130,6 +133,7 @@ void Ajustar(Arbol *arbol, Nodo *nodo)
             }
             else
             {
+                // SI HIJO ES IZQ
                 if (nodo == nodo->padre->izquierda)
                 {
                     nodo = nodo->padre;
@@ -172,6 +176,7 @@ Nodo *Eliminar(Arbol *arbol, int valor)
         return nullptr;
     }
 
+    // Obtener Nodo Remplazo
     if (nodoEliminar->izquierda == nullptr || nodoEliminar->derecha == nullptr)
     {
         nodoReemplazo = nodoEliminar;
@@ -180,6 +185,8 @@ Nodo *Eliminar(Arbol *arbol, int valor)
     {
         nodoReemplazo = ObtenerSiguiente(nodoEliminar);
     }
+
+    // Obtener Hijo Remplazo
     if (nodoReemplazo->izquierda != nullptr)
     {
         hijoReemplazo = nodoReemplazo->izquierda;
@@ -188,10 +195,14 @@ Nodo *Eliminar(Arbol *arbol, int valor)
     {
         hijoReemplazo = nodoReemplazo->derecha;
     }
+
+    // PADRE DEL HIJO REMPLAZO
     if (hijoReemplazo != nullptr)
     {
         hijoReemplazo->padre = nodoReemplazo->padre;
     }
+
+    // SI ES RAIZ
     if (nodoReemplazo->padre == nullptr)
     {
         arbol->raiz = hijoReemplazo;
@@ -206,10 +217,12 @@ Nodo *Eliminar(Arbol *arbol, int valor)
         {
             nodoReemplazo->padre->derecha = hijoReemplazo;
         }
+
         if (nodoReemplazo != nodoEliminar)
         {
             nodoEliminar->valor = nodoReemplazo->valor;
         }
+
         if (nodoReemplazo->color == negro)
         {
             AjustarEliminacion(arbol, hijoReemplazo);
@@ -235,6 +248,7 @@ void AjustarEliminacion(Arbol *arbol, Nodo *nodo)
 {
     while (nodo != arbol->raiz && ColorDeNodo(nodo) == negro)
     {
+        // Si NODO ES IZQ
         if (nodo == nodo->padre->izquierda)
         {
             Nodo *hermano = nodo->padre->izquierda;
@@ -304,10 +318,13 @@ void RotarIzquierda(Arbol *arbol, Nodo *nodo)
 {
     Nodo *derechaHijo = nodo->derecha;
     nodo->derecha = derechaHijo->izquierda;
+    // VERIFICAR SI ESTA VACIO
     if (derechaHijo->izquierda != nullptr)
     {
         derechaHijo->izquierda->padre = nodo;
     }
+
+    // PARTE DEL PADRE
     derechaHijo->padre = nodo->padre;
     if (nodo->padre == nullptr)
     {
@@ -321,6 +338,8 @@ void RotarIzquierda(Arbol *arbol, Nodo *nodo)
     {
         nodo->padre->derecha = derechaHijo;
     }
+
+    // PARTE ENTRE CAMBIO DE POS
     derechaHijo->izquierda = nodo;
     nodo->padre = derechaHijo;
 }

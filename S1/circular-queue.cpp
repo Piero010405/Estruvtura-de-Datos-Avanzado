@@ -1,6 +1,6 @@
 // C or C++ program for insertion and
 // deletion in Circular Queue
-#include<bits/stdc++.h>
+#include <iostream>
 using namespace std;
 
 class Queue
@@ -11,26 +11,26 @@ class Queue
 	// Circular Queue
 	int size;
 	int *arr;
+
 public:
 	Queue(int s)
 	{
-	front = rear = -1;
-	size = s;
-	arr = new int[s];
+		front = rear = -1;
+		size = s;
+		arr = new int[s];
 	}
 
 	void enQueue(int value);
 	int deQueue();
 	void displayQueue();
-    void search(int value);
+	void search(int value);
 };
-
 
 /* Function to create Circular queue */
 void Queue::enQueue(int value)
 {
-	if ((front == 0 && rear == size-1) ||
-			((rear+1) % size == front))
+	if ((front == 0 && rear == size - 1) ||
+		((rear + 1) % size == front))
 	{
 		printf("\nQueue is Full");
 		return;
@@ -42,7 +42,7 @@ void Queue::enQueue(int value)
 		arr[rear] = value;
 	}
 
-	else if (rear == size-1 && front != 0)
+	else if (rear == size - 1 && front != 0)
 	{
 		rear = 0;
 		arr[rear] = value;
@@ -71,7 +71,7 @@ int Queue::deQueue()
 		front = -1;
 		rear = -1;
 	}
-	else if (front == size-1)
+	else if (front == size - 1)
 		front = 0;
 	else
 		front++;
@@ -92,7 +92,7 @@ void Queue::displayQueue()
 	if (rear >= front)
 	{
 		for (int i = front; i <= rear; i++)
-			printf("%d ",arr[i]);
+			printf("%d ", arr[i]);
 	}
 	else
 	{
@@ -104,18 +104,20 @@ void Queue::displayQueue()
 	}
 }
 
-bool calc(int array_pos, int value){
-    if (array_pos == value){
-        cout << "Number " << value << " has been found ";
-        return true;
-    }
-    return false;
+bool calc(int array_pos, int value)
+{
+	if (array_pos == value)
+	{
+		cout << "Number " << value << " has been found ";
+		return true;
+	}
+	return false;
 }
 
 void Queue::search(int value)
 {
 
-    if (front == -1)
+	if (front == -1)
 	{
 		printf("\nQueue is Empty");
 		return;
@@ -124,29 +126,31 @@ void Queue::search(int value)
 	if (rear >= front)
 	{
 		for (int i = front; i <= rear; i++)
-			if (calc(arr[i], value)) {
-                cout << " in the " << i << " position... " << endl;
-                return;
-            }
+			if (calc(arr[i], value))
+			{
+				cout << " in the " << i << " position... " << endl;
+				return;
+			}
 	}
 	else
 	{
 		for (int i = front; i < size; i++)
-			if (calc(arr[i], value)) {
-                cout << " in the " << i << " position... " << endl;
-                return;
-            }
+			if (calc(arr[i], value))
+			{
+				cout << " in the " << i << " position... " << endl;
+				return;
+			}
 
 		for (int i = 0; i <= rear; i++)
-			if (calc(arr[i], value)) {
-                cout << " in the " << i << " position... " << endl;
-                return;
-            }
+			if (calc(arr[i], value))
+			{
+				cout << " in the " << i << " position... " << endl;
+				return;
+			}
 	}
 
-    cout << value << " is not in the circular queue ... " << endl;
+	cout << value << " is not in the circular queue ... " << endl;
 }
-
 
 /* Driver of the program */
 int main()
@@ -176,6 +180,6 @@ int main()
 
 	q.enQueue(20);
 
-    q.search(20);
+	q.search(20);
 	return 0;
 }

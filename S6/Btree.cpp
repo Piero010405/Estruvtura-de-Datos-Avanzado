@@ -4,22 +4,22 @@ using namespace std;
 
 class BTreeNode
 {
-    int t, n; // t = orden & n = numero de elementos actuales en la tupla
+
+    int t, n;
     bool leaf;
-    vector<int> keys;             // tupla
-    vector<BTreeNode *> children; // subarboles
+    vector<int> keys;
+    vector<BTreeNode *> children;
 
 public:
-    BTreeNode(int _t, bool _leaf)
+    BTreeNode(int t, bool leaf)
     {
-        this->t = _t;
-        this->leaf = _leaf;
-        n = 0;
-        keys.resize(2 * (t - 1));
-        children.resize(2 * t);
+        this->t = t;
+        this->leaf = leaf;
+        this->n = 0;
+        this->keys.resize(2 * (t - 1));
+        this->children.resize(2 * t);
     }
 
-    // Imprimir el arbol
     void traverse()
     {
         int i = 0;
@@ -29,69 +29,60 @@ public:
             {
                 children[i]->traverse();
             }
+
             cout << " " << keys[i];
             i++;
         }
 
-        // Imprimir raiz
         if (!leaf)
         {
             children[i]->traverse();
         }
     }
 
-    // Inserccion BINARIA
-    void insertNonFull(int k)
+    void InsertNonFull(int k)
     {
         int i = n - 1;
         if (leaf)
         {
             while (i >= 0 && keys[i] > k)
             {
-                // Le abres espacio dentro de la tupla para que el elemento K sea incertado en su sitio
                 keys[i + 1] = keys[i];
                 i--;
             }
 
-            // Insertar el elemento K en la tupla
             keys[i + 1] = k;
             n++;
         }
-        else // en la RAIZ
+        else
         {
             while (i >= 0 && keys[i] > k)
             {
-                // Obtener la posicion en donde k puede ser insertado dentro de la RAIZ
                 i--;
             }
 
-            // En caso que el subarbol siguiente posterior este lleno
             if (children[i + 1]->n == 2 * (t - 1))
             {
-                // Division Celular
-                splitChild(i + 1, children[i + 1]);
-                // Decidir en que subarbol ponerlo luego de la DIVISION CELULAR
+                SplitChild(i + 1, children[i + 1]);
                 if (keys[i + 1] < k)
                 {
                     i++;
                 }
             }
-            // Insertamos el elemento K en el subarbol siguiente posterior
-            children[i + 1]->insertNonFull(k);
+            children[i + 1]->InsertNonFull(k);
         }
     }
 
-    // DIVISION CELULAR => i = índice del hijo que está lleno
-    void splitChild(int i, BTreeNode *y)
+    void SplitChild(int i, BTreeNode *y)
     {
         BTreeNode *z = new BTreeNode(y->t, y->leaf);
-        z->n = t - 1; // minimo
+        z->n = t - 1;
+
         for (int j = 0; j < t - 1; j++)
         {
             z->keys[j] = y->keys[j + t];
         }
 
-        // En caso sea ROOT tmb tenemos que copiar los hijos
         if (!y->leaf)
         {
             for (int j = 0; j < t; j++)
@@ -99,28 +90,22 @@ public:
                 z->children[j] = y->children[j + t];
             }
         }
-
         y->n = t - 1;
 
-        // Este bucle mueve los punteros de los hijos de y hacia la derecha para hacer espacio para el nuevo hijo z
         for (int j = n; j >= i + 1; j--)
         {
             children[j + 1] = children[j];
         }
-
-        // Se inserta el puntero al nuevo hijo z en la posición correcta en el arreglo de punteros a hijos.
         children[i + 1] = z;
 
-        // Este bucle mueve las claves en el nodo actual hacia la derecha para hacer espacio para la nueva clave que se moverá desde y al nodo actual.
         for (int j = n - 1; j >= i; j--)
         {
             keys[j + 1] = keys[j];
         }
-
-        // Finalmente, se inserta la clave adecuada de y en la posición i del nodo actual, y se incrementa el número de claves en el nodo actual.
         keys[i] = y->keys[t - 1];
-        n = n + 1;
+        n++;
     }
+
     friend class BTree;
 };
 
@@ -160,19 +145,19 @@ public:
                 // Crear una raiz
                 BTreeNode *s = new BTreeNode(t, false);
                 s->children[0] = root;
-                s->splitChild(0, root);
+                s->SplitChild(0, root);
                 int i = 0;
                 if (s->keys[0] < k)
                 {
                     i++;
                 }
 
-                s->children[i]->insertNonFull(k);
+                s->children[i]->InsertNonFull(k);
                 root = s;
             }
             else
             {
-                root->insertNonFull(k);
+                root->InsertNonFull(k);
             }
         }
     }
@@ -197,6 +182,5 @@ int main()
     cout << "El recorrido del arbol construido es: \n";
     t.traverse();
     cout << "\n";
-
     return 0;
 }
