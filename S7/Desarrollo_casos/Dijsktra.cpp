@@ -136,7 +136,7 @@ void insertar_dinamico(int n){
     int peso = rand() % 10 + 1;
     G.agregar_arista(0, nodo_destino, peso);
 
-    for (int i = 0; i < n-1; i++){  
+    for (int i = 0; i < n*(n-1); i++){  
         int nodo_origen = rand() % (v + 1);
         peso = rand() % 10 + 1;
         nodo_destino = rand( )% (v + 1);
@@ -167,6 +167,6 @@ void insertar_dinamico(int n){
 int main()
 {
     srand(time(nullptr));
-    insertar_dinamico(10);
+    insertar_dinamico(500);
     return 0;
 }
