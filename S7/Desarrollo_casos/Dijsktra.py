@@ -45,7 +45,7 @@ class ColaPrioridad:
         return -1
 
 
-def Dijkstra(G: Grafo, origen):
+def dijkstra_code(G: Grafo, origen):
     distancias = [float('inf')] * G.n
     previo = [None] * G.n
     visitado = [False] * G.n
@@ -72,22 +72,22 @@ def Dijkstra(G: Grafo, origen):
 
 
 # Crear un grafo de prueba
-G = Grafo(5)
-G.agregar_arista(0, 1, 10)
-G.agregar_arista(0, 2, 5)
-G.agregar_arista(1, 2, 2)
-G.agregar_arista(1, 3, 1)
-G.agregar_arista(2, 1, 3)
-G.agregar_arista(2, 3, 9)
-G.agregar_arista(2, 4, 2)
-G.agregar_arista(3, 4, 4)
-G.agregar_arista(4, 3, 6)
+grafo = Grafo(5)
+grafo.agregar_arista(0, 1, 10)
+grafo.agregar_arista(0, 2, 5)
+grafo.agregar_arista(1, 2, 2)
+grafo.agregar_arista(1, 3, 1)
+grafo.agregar_arista(2, 1, 3)
+grafo.agregar_arista(2, 3, 9)
+grafo.agregar_arista(2, 4, 2)
+grafo.agregar_arista(3, 4, 4)
+grafo.agregar_arista(4, 3, 6)
 
 # Ejecutar el algoritmo de Dijkstra desde el nodo 0
 ORIGEN = 0
-distancias_1, previo_1 = Dijkstra(G, ORIGEN)
+distancias_1, previo_1 = dijkstra_code(grafo, ORIGEN)
 
 # Imprimir las distancias mínimas desde el nodo de origen a todos los demás nodos
 print("Distancias mínimas desde el nodo", ORIGEN, ":")
-for i, distancia in enumerate(distancias_1):
-    print(f"Nodo {i}: {distancia}")
+for j, distancia in enumerate(distancias_1):
+    print(f"Nodo {j}: {distancia}")

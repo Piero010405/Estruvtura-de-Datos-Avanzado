@@ -126,6 +126,46 @@ Tupla *Dijkstra(Grafo *G, int origen)
     return solucion;
 }
 
+Tupla *dijkstra(Grafo *G, int origen)
+{
+    Tupla *solucion = new Tupla(G->obtener_n()); // O(V), V vertices del grafo
+
+    solucion->distancias[origen] = 0; // O(1)
+
+    ColaPrioridad *cola_prioridad = new ColaPrioridad(); // O(1)
+    cola_prioridad->insertar(origen, 0); // O(log V)
+
+    while (!cola_prioridad->vacia()) // O(V)
+    {
+        int actual = cola_prioridad->extraer_minimo(); // O(log V)
+        solucion->visitado[actual] = true; // O(1)
+
+        for (int vecino : G->obtener_adyacentes(actual)) // O(E), E aristas en el grafo
+        {
+            if (!solucion->visitado[vecino]) // O(1)
+            {
+                int costo = G->obtener_peso(actual, vecino); // O(1)
+                int nueva_distancia = solucion->distancias[actual] + costo; // O(1)
+
+                if (nueva_distancia < solucion->distancias[vecino]) // O(1)
+                {
+                    solucion->distancias[vecino] = nueva_distancia; // O(1)
+                    solucion->previo[vecino] = actual; // O(1)
+                    cola_prioridad->insertar_o_decrementar(vecino, nueva_distancia); // O(log V)
+                }
+            }
+        }
+    }
+
+    delete cola_prioridad; // O(1)
+    return solucion; // O(1)
+}
+
+// NOTACION ASINTÓTICA: O(V + V.logV + V.E + V.E.logV)
+//                      O(V.E.logV)
+//                      O(E.logV)
+
+
 void insertar_dinamico(int n){
     clock_t start_time = clock(); 
     srand(time(nullptr));
